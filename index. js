@@ -1,0 +1,81 @@
+// ====== SET YOUR BACKEND URL HERE ======
+const BACKEND_URL = "https://YOUR-BACKEND-URL.example.com"; // e.g. https://bramtech-api.up.railway.app
+
+// ====== Helpers ======
+const $ = (id) => document.getElementById(id);
+const showStatus = (type, message) => {
+  const wrap = $("statusWrap");
+  const icon = $("statusIcon");
+  const text = $("statusText");
+
+  wrap.classList.remove("hidden", "border-green-300", "border-red-300", "border-gray-300", "bg-green-50", "bg-red-50", "bg-gray-50");
+  icon.innerHTML = "";
+  text.textContent = message;
+
+  if (type === "loading") {
+    wrap.classList.add("border-gray-300", "bg-gray-50");
+    icon.innerHTML = `<svg class="animate-spin h-7 w-7 text-gray-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" stroke-width="4" opacity=".25"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" fill="none"/></svg>`;
+  } else if (type === "success") {
+    wrap.classList.add("border-green-300", "bg-green-50");
+    icon.innerHTML = `<svg class="h-7 w-7 text-green-600" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
+  } else {
+    wrap.classList.add("border-red-300", "bg-red-50");
+    icon.innerHTML = `<svg class="h-7 w-7 text-red-600" viewBox="0 0 24 24" fill="currentColor"><path d="M15 9l-6 6M9 9l6 6"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
+  }
+};
+
+// ====== Payment flow ======
+async function pay(amount) {
+  const phone = $("phone").value.trim();
+  if (!/^2547\d{8}$/.test(phone)) {
+    showStatus("error", "Enter phone like 2547XXXXXXXX");
+    return;
+  }
+
+  try {
+    showStatus("loading", "Processing… Check your phone for STK prompt.");
+    const res = await fetch(`${BACKEND_URL}/pay`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, amount })
+    });
+    const data = await res.json();
+    // Success response normally has CustomerMessage
+    if (data && data.CustomerMessage) {
+      showStatus("success", data.CustomerMessage);
+    } else {
+      showStatus("error", data.error || "Failed to send STK. Try again.");
+    }
+  } catch (e) {
+    showStatus("error", "Network error. Try again.");
+  }
+}
+
+$("btn100").addEventListener("click", () => pay(100));
+$("btn200").addEventListener("click", () => pay(200));
+
+// ====== PWA Install (Download App) ======
+let deferredPrompt;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $("installBtn").classList.remove("hidden");
+});
+
+$("installBtn").addEventListener("click", async () => {
+  if (!deferredPrompt) {
+    alert("To install, use your browser menu: Add to Home Screen.");
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome !== "accepted") {
+    // user dismissed
+  }
+  deferredPrompt = null;
+});
+
+// Register service worker (optional but recommended)
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
