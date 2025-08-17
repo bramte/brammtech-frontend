@@ -1,4 +1,4 @@
-app.pyfrom flask import Flask, request, jsonify, render_template, redirect, url_for, session
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 import requests
 import sqlite3
 import base64
@@ -160,5 +160,4 @@ def logout():
     return redirect(url_for("admin_login"))
 
 if __name__ == "__main__":
-    app.run(debug=True)# brammtech-frontend
-Flask backend for Bramtech communication app
+    app.run(debug=True)
