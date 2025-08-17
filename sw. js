@@ -1,0 +1,20 @@
+self.addEventListener("install", (e) => {
+  e.waitUntil(
+    caches.open("bramtech-v1").then((cache) =>
+      cache.addAll([
+        "/",
+        "/index.html",
+        "/index.js",
+        "/privacy.html",
+        "/terms.html",
+        "/contact.html",
+      ])
+    )
+  );
+});
+
+self.addEventListener("fetch", (e) => {
+  e.respondWith(
+    caches.match(e.request).then((res) => res || fetch(e.request))
+  );
+});
