@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Privacy Policy – BRAMTECH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <main class="max-w-2xl mx-auto p-6 bg-white mt-6 rounded-xl shadow">
+    <h1 class="text-2xl font-bold mb-4">Privacy Policy</h1>
+    <p class="mb-3">We respect your privacy. We only collect information necessary to process payments (phone number and amount). We never sell or share your data with third parties.</p>
+    <p class="mb-3">Payment processing is handled via Safaricom M-PESA Daraja. Callback data is used to confirm transaction status.</p>
+    <p class="mb-3">If you have questions, contact us via WhatsApp or phone on the Contact page.</p>
+    <a href="index.html" class="text-blue-600 hover:underline">← Back</a>
+  </main>
+</body>
+</html>
